@@ -1,0 +1,7 @@
+dist/
+node_modules/
+.direnv/
+config.json
+.eslintcache
+
+tcd/*
