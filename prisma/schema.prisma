@@ -1,0 +1,55 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum MessageType {
+  DISCUSSION
+  THREAD_USER
+  THREAD_MODERATOR
+}
+
+model Message {
+  id      String      @id
+  type    MessageType
+  content String
+
+  authorId String
+  User     User   @relation(fields: [authorId], references: [id])
+
+  threadId String
+  Thread   Thread @relation(fields: [threadId], references: [channelId])
+}
+
+enum ThreadState {
+  OPEN
+  CLOSED
+}
+
+model Thread {
+  channelId String @id
+
+  authorId String
+  user     User   @relation(fields: [authorId], references: [id])
+
+  messages Message[]
+
+  state ThreadState
+}
+
+enum UserType {
+  REGULAR
+  MODERATOR
+}
+
+model User {
+  id   String   @id
+  type UserType
+
+  threads  Thread[]
+  messages Message[]
+}
