@@ -1,3 +1,4 @@
+import { User, UserState } from "@prisma/client";
 import { GuildMember } from "discord.js";
 import { query } from "./util.js";
 
@@ -5,15 +6,15 @@ export function createUserIfNotExists(member: GuildMember) {
   return query((db) =>
     db.user.upsert({
       create: {
-        id: member.id,
+        userId: member.id,
         type: "REGULAR",
       },
       update: {
-        id: member.id,
+        userId: member.id,
         type: "REGULAR",
       },
       where: {
-        id: member.id,
+        userId: member.id,
       },
     })
   );
@@ -23,7 +24,20 @@ export function fetchUserById(userId: string) {
   return query((db) =>
     db.user.findUnique({
       where: {
-        id: userId,
+        userId,
+      },
+    })
+  );
+}
+
+export function updateUserState(user: User, newState: UserState) {
+  return query((db) =>
+    db.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        state: newState,
       },
     })
   );

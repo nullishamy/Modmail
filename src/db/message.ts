@@ -11,7 +11,7 @@ export function createMessage(
   return query((db) =>
     db.message.create({
       data: {
-        id: message.id,
+        messageId: message.id,
         content: contentOverride ?? message.content,
         type: messageType,
         authorId: message.author.id,

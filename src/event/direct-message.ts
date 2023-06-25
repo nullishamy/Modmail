@@ -4,9 +4,41 @@ import { createMessage } from "../db/message.js";
 import { createThread, fetchThreadByAuthorId } from "../db/thread.js";
 import { createUserIfNotExists } from "../db/user.js";
 import { client } from "../index.js";
-import { threadMessageEmbed } from "../ui/thread.js";
+import { informativeEmbed, threadMessageEmbed } from "../ui/thread.js";
 
 export async function onDirectMessage(message: Message) {
+  const guildConfig = await fetchGuildConfig();
+
+  if (!guildConfig.success) {
+    if (guildConfig.error === "no-config-present") {
+      // We have no config at all, we can only log to error
+      logger.error(
+        "No guild config has been setup, but a thread is being created. Cannot continue thread creation. Please setup the guild config."
+      );
+      await message.channel.send(
+        "Sorry, the server you are trying to communicate with has not set me up! Please let them know, and try again soon."
+      );
+      return;
+    } else {
+      logger.error(
+        `Missing required guild config attribute "${guildConfig.data}" (evaluated during thread creation). Please set the value and try again.`
+      );
+      await message.channel.send(
+        `Sorry, the server you are trying to communicate with has not set me up entirely! Please let them know, quote the value '${guildConfig.data}', and try again soon.`
+      );
+      return;
+    }
+  }
+
+  const { threadCategory, guild } = guildConfig.data;
+
+  const member = await guild.members.fetch(message.author.id);
+  const modmailUser = await createUserIfNotExists(member);
+
+  if (modmailUser.state !== 'UNBLOCKED') {
+    return await message.channel.send("You are blocked from using Modmail at this time.")
+  }
+
   const existingThread = await fetchThreadByAuthorId(message.author.id);
   if (existingThread) {
     const threadChannel = client.channels.cache.get(existingThread.channelId);
@@ -18,7 +50,7 @@ export async function onDirectMessage(message: Message) {
     }
 
     await threadChannel.send({
-      embeds: [threadMessageEmbed(message, message.content, 'THREAD_USER')]
+      embeds: [threadMessageEmbed(message.author, message.content, "THREAD_USER", false)],
     });
     await message.react("👍");
     await createMessage(message, "THREAD_USER", existingThread);
@@ -57,20 +89,23 @@ export async function onDirectMessage(message: Message) {
     return;
   }
 
-  const { threadCategory, guild } = fetchGuildConfig();
-
   const thread = await threadCategory.children.create({
-    name: `${message.author.username}-${message.author.discriminator}`,
+    name: `${message.author.username}`,
     reason: "Modmail thread",
     topic: `Modmail thread for ${message.author.id}`,
   });
 
-  const member = await guild.members.fetch(message.author.id);
-
-  await createUserIfNotExists(member);
-
   const threadDb = await createThread(thread, message.author);
-  await createMessage(message, 'THREAD_USER', threadDb)
+  await createMessage(message, "THREAD_USER", threadDb);
 
-  await thread.send(message.content);
+  await thread.send({
+    embeds: [
+      informativeEmbed(message, member),
+      threadMessageEmbed(message.author, message.content, "THREAD_USER", false),
+    ],
+  });
+
+  await message.channel.send(
+    "Thread created, the staff team will get back to you shortly."
+  );
 }

@@ -4,8 +4,8 @@ import { BotConfig } from "../config/types.js";
 
 export interface CommandParameters<TArgs> {
   client: Client;
-  message: Message;
-  config: BotConfig;
+  message: Message<true>;
+  botConfig: BotConfig;
   args: TArgs;
 }
 

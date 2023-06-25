@@ -14,12 +14,13 @@ enum MessageType {
 }
 
 model Message {
-  id      String      @id
-  type    MessageType
-  content String
+  id        String      @id @default(cuid())
+  messageId String      @unique
+  type      MessageType
+  content   String
 
   authorId String
-  User     User   @relation(fields: [authorId], references: [id])
+  User     User   @relation(fields: [authorId], references: [userId])
 
   threadId String
   Thread   Thread @relation(fields: [threadId], references: [channelId])
@@ -31,14 +32,30 @@ enum ThreadState {
 }
 
 model Thread {
-  channelId String @id
+  id        String @id @default(cuid())
+  channelId String @unique
 
   authorId String
-  user     User   @relation(fields: [authorId], references: [id])
+  author   User   @relation(fields: [authorId], references: [userId])
 
   messages Message[]
+  state    ThreadState
+  close    ThreadClose?
+}
 
-  state ThreadState
+model ThreadClose {
+  id String @id @default(cuid())
+
+  thread   Thread   @relation(fields: [threadId], references: [id])
+  closedBy User     @relation(fields: [closedById], references: [userId])
+  closeAt  DateTime
+
+  threadId   String @unique
+  closedById String
+
+  silent Boolean
+
+  message String?
 }
 
 enum UserType {
@@ -46,10 +63,31 @@ enum UserType {
   MODERATOR
 }
 
-model User {
-  id   String   @id
-  type UserType
+enum UserState {
+  BLOCKED
+  UNBLOCKED
+}
 
-  threads  Thread[]
-  messages Message[]
+model User {
+  id     String    @id @default(cuid())
+  userId String    @unique
+  type   UserType
+  state  UserState @default(UNBLOCKED)
+
+  openedThreads Thread[]
+  closedThreads ThreadClose[]
+  messages      Message[]
+}
+
+model GuildConfig {
+  guildId String @id
+
+  categoryId   String?
+  logChannelId String?
+}
+
+model Alias {
+  id   String @id @default(cuid())
+  key  String
+  text String
 }

@@ -4,11 +4,18 @@ import { fetchThreadByChannelId } from "../db/thread.js";
 import { threadMessageEmbed } from "../ui/thread.js";
 import { Command } from "./types.js";
 
-const argSchema = yargs().boolean("anon");
+const argSchema = yargs()
+  .command("<message..>", "the message to reply with")
+  .demandCommand(1)
+  .option("anon", {
+    type: "boolean",
+    default: false,
+    description: "reply to the thread anonymously",
+  });
 
 export const reply: Command<typeof argSchema> = {
   name: "reply",
-  description: "Replies to a message in a thread",
+  description: "replies to a message in a thread",
   aliases: [],
   argSchema,
   run: async ({ client, message, args }) => {
@@ -22,22 +29,29 @@ export const reply: Command<typeof argSchema> = {
 
     const user = await client.users.fetch(thread.authorId);
     const dm = await user.createDM(true);
-    const embed = threadMessageEmbed(
-      message,
+    const dmEmbed = threadMessageEmbed(
+      message.author,
       args._.join(" "),
-      "THREAD_MODERATOR"
+      "THREAD_MODERATOR",
+      args.anon
     );
 
     await dm.send({
-      embeds: [embed],
+      embeds: [dmEmbed],
     });
 
     await createMessage(message, "THREAD_MODERATOR", thread, args._.join(" "));
+    const channelEmbed = threadMessageEmbed(
+      message.author,
+      args._.join(" "),
+      "THREAD_MODERATOR",
+      false
+    );
 
     await message.channel.send({
-      embeds: [embed],
+      embeds: [channelEmbed],
     });
 
-    await message.delete()
+    await message.delete();
   },
 };

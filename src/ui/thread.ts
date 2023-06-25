@@ -1,7 +1,5 @@
 import { MessageType } from "@prisma/client";
-import { EmbedBuilder, Message } from "discord.js";
-
-const DEFAULT_AVATAR_URL = "https://cdn.discordapp.com/embed/avatars/0.png";
+import { EmbedBuilder, GuildMember, Message, time, User } from "discord.js";
 
 const colours = {
   user: 0xf8c4b4,
@@ -9,19 +7,43 @@ const colours = {
 };
 
 export function threadMessageEmbed(
-  message: Message,
+  author: User,
   content: string,
-  messageType: MessageType
+  messageType: MessageType,
+  anon: boolean
 ) {
-  return new EmbedBuilder()
+  const embed = new EmbedBuilder()
     .setDescription(content)
     .setTimestamp(new Date())
-    .setAuthor({
-      name: message.author.tag,
-      iconURL: message.author.avatarURL() ?? DEFAULT_AVATAR_URL,
-    })
     .setFooter({
-        text: messageType === 'THREAD_MODERATOR' ? 'From staff' : 'From user'
+      text: messageType === "THREAD_MODERATOR" ? "From staff" : "From user",
     })
-    .setColor(messageType === 'THREAD_MODERATOR' ? colours.mod : colours.user);
+    .setColor(messageType === "THREAD_MODERATOR" ? colours.mod : colours.user);
+
+  if (!anon) {
+    embed.setAuthor({
+      name: `@${author.username}`,
+      iconURL: author.displayAvatarURL(),
+    });
+  }
+  return embed;
+}
+
+export function informativeEmbed(
+  startingMessage: Message,
+  member: GuildMember
+) {
+  // @XT was created 12 days ago, joined 5 days ago with no past threads.
+  return new EmbedBuilder()
+    .setDescription(
+      `<@${startingMessage.author.id}> created ${time(
+        startingMessage.author.createdAt,
+        "R"
+      )}, joined ${time(member.joinedAt ?? new Date(), "R")}`
+    )
+    .setAuthor({
+      name: `@${startingMessage.author.username}`,
+      iconURL: startingMessage.author.displayAvatarURL(),
+    })
+    .setColor(colours.user);
 }

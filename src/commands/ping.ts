@@ -1,13 +1,11 @@
 import yargs from "yargs";
 import { Command } from "./types.js";
 
-const argSchema = yargs().boolean("anon")
-
-export const ping: Command<typeof argSchema> = {
+export const ping: Command = {
   name: "ping",
-  description: "Tests the bots ping",
+  description: "tests the bots ping",
+  argSchema: yargs(),
   aliases: [],
-  argSchema,
   run: async ({ client, message }) => {
     const start = Date.now();
     await client.user?.fetch(true);
