@@ -16,21 +16,25 @@ export async function fetchAliasByName(name: string) {
 }
 
 export async function createAlias(name: string, text: string) {
-    return query(db => db.alias.create({
-        data: {
-            key: name,
-            text
-        }
-    }))
+  return query((db) =>
+    db.alias.create({
+      data: {
+        key: name,
+        text,
+      },
+    })
+  );
 }
 
 export async function updateAlias(alias: Alias, newText: string) {
-    return query(db => db.alias.update({
-        where: {
-            id: alias.id
-        },
-        data: {
-            text: newText
-        }
-    }))
+  return query((db) =>
+    db.alias.update({
+      where: {
+        id: alias.id,
+      },
+      data: {
+        text: newText,
+      },
+    })
+  );
 }

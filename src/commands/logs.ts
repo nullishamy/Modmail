@@ -24,10 +24,16 @@ export const logs: Command<typeof argSchema> = {
     const threads = await fetchThreadsForUser(targetId);
 
     await message.reply({
-      content: threads
-        .filter((a, b) => a.state === 'CLOSED')
-        .map((t) => `${t.id} - (closed by <@${t.close?.closedById}>) - "${t.messages[0]?.content.substring(0, 30) ?? "None"}"`)
-        .join("\n") || "No threads found",
+      content:
+        threads
+          .filter((a, b) => a.state === "CLOSED")
+          .map(
+            (t) =>
+              `${t.id} - (closed by <@${t.close?.closedById}>) - "${
+                t.messages[0]?.content.substring(0, 30) ?? "None"
+              }"`
+          )
+          .join("\n") || "No threads found",
       allowedMentions: { repliedUser: false, users: [] },
     });
   },

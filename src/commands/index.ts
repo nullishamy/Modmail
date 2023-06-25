@@ -10,13 +10,13 @@ import { help } from "./help.js";
 import { alias } from "./alias.js";
 
 export const commands = [
-    ping,
-    reply,
-    close,
-    config,
-    logs,
-    block,
-    unblock,
-    help,
-    alias
-] as Command[]
+  ping,
+  reply,
+  close,
+  config,
+  logs,
+  block,
+  unblock,
+  help,
+  alias,
+] as Command[];

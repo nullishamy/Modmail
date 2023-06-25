@@ -31,12 +31,14 @@ client.once(Events.ClientReady, async (c) => {
   logger.info(`Ready! Logged in as @${c.user.username}`);
   const scheduledThreadCloses = await fetchScheduledThreads();
   const config = await fetchGuildConfig();
-  
+
   if (!config.success) {
-    logger.warn('Cannot restart scheduled tasks, guild config not (fully) setup')
-    return
+    logger.warn(
+      "Cannot restart scheduled tasks, guild config not (fully) setup"
+    );
+    return;
   }
-  
+
   logger.info(`(Re)starting ${scheduledThreadCloses.length} scheduled events`);
   for (const close of scheduledThreadCloses) {
     setTimeout(() => {

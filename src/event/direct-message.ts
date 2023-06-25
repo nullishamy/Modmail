@@ -35,8 +35,10 @@ export async function onDirectMessage(message: Message) {
   const member = await guild.members.fetch(message.author.id);
   const modmailUser = await createUserIfNotExists(member);
 
-  if (modmailUser.state !== 'UNBLOCKED') {
-    return await message.channel.send("You are blocked from using Modmail at this time.")
+  if (modmailUser.state !== "UNBLOCKED") {
+    return await message.channel.send(
+      "You are blocked from using Modmail at this time."
+    );
   }
 
   const existingThread = await fetchThreadByAuthorId(message.author.id);
@@ -50,7 +52,14 @@ export async function onDirectMessage(message: Message) {
     }
 
     await threadChannel.send({
-      embeds: [threadMessageEmbed(message.author, message.content, "THREAD_USER", false)],
+      embeds: [
+        threadMessageEmbed(
+          message.author,
+          message.content,
+          "THREAD_USER",
+          false
+        ),
+      ],
     });
     await message.react("👍");
     await createMessage(message, "THREAD_USER", existingThread);

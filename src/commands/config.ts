@@ -10,22 +10,25 @@ import { Command } from "./types.js";
 
 const CONFIG_VALUES = {
   categoryId: "type: CategoryId :: the category to create threads in",
-  logChannelId: "type: ChannelId :: the channel to send logs in"
-}
+  logChannelId: "type: ChannelId :: the channel to send logs in",
+};
 
-const CONFIG_LIST = Object.entries(CONFIG_VALUES).map(([key, value]) => `${key} => ${value}`).join('\n')
+const CONFIG_LIST = Object.entries(CONFIG_VALUES)
+  .map(([key, value]) => `${key} => ${value}`)
+  .join("\n");
 
 const argSchema = yargs()
   .command("init", "initialise the config")
   .command("get <key>", "get a value")
   .command("set <key> <value>", "set a value to a key")
   .command("list", "list all valid config values")
-  .demandCommand(1, 'provide a command (get, set, init, list)')
-  .option('force', {
-    type: 'boolean',
-    description: 'forcibly overwrite a guild config to the defaults when using `init`',
-    default: false
-  })
+  .demandCommand(1, "provide a command (get, set, init, list)")
+  .option("force", {
+    type: "boolean",
+    description:
+      "forcibly overwrite a guild config to the defaults when using `init`",
+    default: false,
+  });
 
 export const config: Command<typeof argSchema> = {
   name: "config",
@@ -121,14 +124,12 @@ export const config: Command<typeof argSchema> = {
         content: `Set ${key} to ${value}`,
         allowedMentions: { repliedUser: false },
       });
-    }
-    else if (command === 'list') {
+    } else if (command === "list") {
       return await message.reply({
         content: `All valid config values\n\n${CONFIG_LIST}`,
         allowedMentions: { repliedUser: false },
       });
-    }
-    else {
+    } else {
       await message.reply({
         content: `Unknown sub-command "${command}"`,
         allowedMentions: { repliedUser: false },

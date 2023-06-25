@@ -95,8 +95,8 @@ export function fetchThreadsForUser(userId: string) {
 
 export function fetchScheduledThreads() {
   // All threads where there's a close entry, but the thread has yet to be marked close
-  // We cannot simply compare the close time to 'now' because we may have had downtime that 
-  // went further than the close date, but we do not want to fetch all past threads, and 
+  // We cannot simply compare the close time to 'now' because we may have had downtime that
+  // went further than the close date, but we do not want to fetch all past threads, and
   // also do not want to clear the close records, as they are useful for viewing in the log viewer
   return query((db) =>
     db.threadClose.findMany({

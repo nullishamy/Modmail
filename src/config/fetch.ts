@@ -35,12 +35,15 @@ export function fetchGuildConfigRaw() {
 }
 
 export async function fetchGuildConfigInfallibly(): Promise<GuildConfig> {
-  const config = await fetchGuildConfig()
+  const config = await fetchGuildConfig();
   if (!config.success) {
-    assert(false, `guild config was not successfully fetched: ${config.error} // ${config.data}`)
+    assert(
+      false,
+      `guild config was not successfully fetched: ${config.error} // ${config.data}`
+    );
   }
 
-  return config.data
+  return config.data;
 }
 
 export async function fetchGuildConfig(): Promise<GuildConfigResult> {
@@ -88,7 +91,6 @@ export async function fetchGuildConfig(): Promise<GuildConfigResult> {
     );
   }
 
-
   if (!logChannel || logChannel.type !== ChannelType.GuildText) {
     throw new Error(
       `Expected text channel for channel ID ${guildConfig.logChannelId}`
@@ -104,7 +106,7 @@ export async function fetchGuildConfig(): Promise<GuildConfigResult> {
     data: {
       threadCategory,
       guild,
-      logChannel
+      logChannel,
     },
   };
 }

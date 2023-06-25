@@ -37,7 +37,7 @@ export const close: Command<typeof argSchema> = {
   argSchema,
   run: async ({ client, message, args }) => {
     const thread = await fetchThreadByChannelId(message.channelId);
-    const config = await fetchGuildConfigInfallibly()
+    const config = await fetchGuildConfigInfallibly();
     if (!thread) {
       return message.reply({
         content: "Current channel is not a thread.",
@@ -77,7 +77,7 @@ export const close: Command<typeof argSchema> = {
 
           const embed = threadMessageEmbed(
             message.author,
-            `Thread closed. ${args._.join(' ') || ""}`,
+            `Thread closed. ${args._.join(" ") || ""}`,
             "THREAD_MODERATOR",
             args.anon
           );
@@ -88,8 +88,10 @@ export const close: Command<typeof argSchema> = {
         }
 
         await config.logChannel.send({
-          content: `Thread opened by @${user.username} closed by @${message.author.username} (scheduled @ ${time(closeAtDate, 'F')})`
-        }) 
+          content: `Thread opened by @${user.username} closed by @${
+            message.author.username
+          } (scheduled @ ${time(closeAtDate, "F")})`,
+        });
         await message.channel.delete();
         await updateThreadState(thread, "CLOSED");
       };
@@ -102,7 +104,7 @@ export const close: Command<typeof argSchema> = {
       thread,
       silent: args.silent,
       closerId: message.author.id,
-      closeMessage: args._.join(' '),
+      closeMessage: args._.join(" "),
     });
   },
 };

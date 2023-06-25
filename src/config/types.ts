@@ -1,12 +1,12 @@
-import { CategoryChannel, Guild, TextChannel } from "discord.js"
+import { CategoryChannel, Guild, TextChannel } from "discord.js";
 
 export interface BotConfig {
-    token: string
-    guildId: string
+  token: string;
+  guildId: string;
 }
 
 export interface GuildConfig {
-    threadCategory: CategoryChannel,
-    logChannel: TextChannel
-    guild: Guild
+  threadCategory: CategoryChannel;
+  logChannel: TextChannel;
+  guild: Guild;
 }

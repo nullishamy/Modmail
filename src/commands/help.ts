@@ -8,7 +8,9 @@ export const help: Command = {
   argSchema: yargs(),
   aliases: [],
   run: async ({ message }) => {
-    const commandList = commands.map((c) => `${c.name} - ${c.description}`).join("\n")
+    const commandList = commands
+      .map((c) => `${c.name} - ${c.description}`)
+      .join("\n");
     await message.reply({
       content: `Run "++<command> --help" to get detailed help for a given command\n\n${commandList}`,
       allowedMentions: { repliedUser: false },
