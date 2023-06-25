@@ -26,7 +26,7 @@ export const logs: Command<typeof argSchema> = {
     await message.reply({
       content:
         threads
-          .filter((a, b) => a.state === "CLOSED")
+          .filter(a => a.state === "CLOSED")
           .map(
             (t) =>
               `${t.id} - (closed by <@${t.close?.closedById}>) - "${
