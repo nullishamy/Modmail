@@ -12,7 +12,7 @@ export const logs: Command<typeof argSchema> = {
   description: "view the threads for a user",
   aliases: [],
   argSchema,
-  run: async ({ client, message, args }) => {
+  run: async ({ message, args }) => {
     let targetId: string;
 
     if (args.user) {
